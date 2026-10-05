@@ -1,1 +1,22 @@
 project_name: Supply Chain
+
+kaggle_ingestion:
+  dataset: shashwatwork/dataco-smart-supply-chain-for-big-data-analysis
+  orders:
+    file_path: DataCoSupplyChainDataset.csv
+    encoding: latin-1
+    required_columns:
+      - Order Id
+      - Order Item Id
+      - order date (DateOrders)
+      - Order Item Quantity
+      - Product Card Id
+      - Days for shipping (real)
+      - Days for shipment (scheduled)
+      - Late_delivery_risk
+  descriptions:
+    file_path: DescriptionDataCoSupplyChain.csv
+    encoding: latin-1
+    required_columns:
+      - FIELDS
+      - DESCRIPTION
