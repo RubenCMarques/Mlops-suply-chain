@@ -1,7 +1,7 @@
 # Backend
 
 FastAPI serves the HTTP API, Kedro runs data workflows, and Hopsworks provides the
-external feature store. Python 3.12 is the development and container baseline.
+external feature store. Python 3.13 is the development and container baseline.
 
 ## Development
 
@@ -107,7 +107,7 @@ Hopsworks network calls are mocked; CI requires no Hopsworks credentials.
 The [CI workflow](../.github/workflows/ci.yml) runs backend tests and the React
 production build. The [Pylint workflow](../.github/workflows/pylint.yml) runs
 Pylint, Ruff, and formatting checks. Both run on pushes, pull requests, and manual
-dispatch. Python 3.12 and Node.js 22 match the containers.
+dispatch. Python 3.13 and Node.js 22 match the containers.
 Dependencies are installed from the committed lockfiles. Pylint checks application
 code; Ruff also checks tests. Missing-docstring style checks are disabled to match
 the current code style; other Pylint diagnostics fail the job.
