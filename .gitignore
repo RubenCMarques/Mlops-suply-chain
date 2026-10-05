@@ -36,3 +36,7 @@ mlartifacts/
 # Operating system files
 .DS_Store
 Thumbs.db
+
+# Local deployment settings and browser verification output
+/deploy/kubernetes/hopsworks.env
+/artifacts/

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: supply-chain-config
+data:
+  ENVIRONMENT: production
+  KEDRO_DISABLE_TELEMETRY: "1"
+  DO_NOT_TRACK: "1"

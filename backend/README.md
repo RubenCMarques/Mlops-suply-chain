@@ -1,73 +1,108 @@
 # Backend
 
-Python backend for the supply chain MLOps solution. The intended entry point for
-the frontend is an HTTP API. This is the initial repository structure; application
-logic and framework integrations have not been implemented yet.
-
-## Layout
-
-```text
-backend/
-|-- src/supply_chain/
-|   |-- api/
-|   |   `-- routes/       # HTTP endpoints
-|   |-- core/             # Application settings and logging
-|   |-- schemas/          # Request and response definitions
-|   |-- services/         # Application logic used by API routes
-|   |-- pipelines/
-|   |   |-- ingestion/    # Load and validate source data
-|   |   |-- preprocessing/ # Shared data transformations
-|   |   |-- training/     # Fit models
-|   |   |-- evaluation/   # Evaluate and compare models
-|   |   `-- inference/    # Generate predictions
-|   `-- monitoring/       # Data drift and model performance
-|-- config/
-|   |-- base/             # Shared, non-sensitive configuration
-|   `-- local/            # Ignored developer configuration
-|-- data/
-|   |-- raw/              # Original source data
-|   |-- processed/        # Cleaned data and features
-|   `-- predictions/      # Batch prediction output
-|-- models/               # Local model and preprocessing artifacts
-|-- notebooks/            # Exploration and experiments
-|-- tests/
-|   |-- unit/             # Pipeline and service tests
-|   `-- integration/      # API and external-system tests
-`-- pyproject.toml        # Backend package and dependencies
-```
-
-## Responsibilities
-
-API routes handle HTTP requests and responses. Services coordinate application
-logic and call inference code. Pipelines own data preparation, model training,
-evaluation, and prediction. Keep reusable transformations shared between training
-and inference so the same input processing is used in both.
-
-Run training separately from interactive prediction requests. An API may later
-submit training jobs to an orchestrator and return their status.
-
-The illustrative bank project informs the separation of pipelines, configuration,
-data, and tests. It is not a dependency of this backend. API, orchestration, and
-experiment tracking frameworks will be selected and configured when implemented.
+FastAPI serves the HTTP API, Kedro runs data workflows, and Hopsworks provides the
+external feature store. Python 3.12 is the development and container baseline.
 
 ## Development
 
-Use Python 3.12 or newer, matching the root project's Python requirement. Backend
-dependencies belong in this folder's `pyproject.toml`. The root starter manifest
-remains separate.
-
-To install this package locally from the repository root in PowerShell:
+From this directory:
 
 ```powershell
-cd backend
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e .
+uv sync --frozen --extra dev
+uv run --frozen --extra dev uvicorn supply_chain.api.main:app --reload
 ```
 
-There is no server command or executable ML workflow yet. The first implementation
-step is to define the prediction input/output contract and add the API application.
+The API is available at http://127.0.0.1:8000, with interactive documentation at
+`/docs`. Use a second terminal for the frontend.
 
-Git tracks the empty directory placeholders but ignores local datasets, models,
-and developer configuration. Dataset and model versioning are future MLOps work.
+| Route | Purpose |
+| --- | --- |
+| `GET /health/live` | Process health, without external requests |
+| `GET /health/ready` | Readiness for the currently implemented endpoints |
+| `GET /api/v1/status` | Environment, registered pipelines, feature-store configuration status |
 
-The [frontend](../frontend/README.md) will communicate with this backend over HTTP.
+There is no trained model or prediction endpoint yet. Readiness currently covers
+the status API; add model-loading checks when implementing prediction serving.
+Hopsworks configuration status does not establish remote connectivity.
+
+## Kedro
+
+```powershell
+uv run --frozen --extra dev kedro run --pipelines smoke
+```
+
+The default pipeline is also `smoke`. It checks project configuration and executes
+a real Kedro node without external services. `feature_snapshot` reads an existing
+Hopsworks feature view into `data/processed/features.parquet`.
+
+```text
+src/supply_chain/
+|-- api/                  FastAPI application and routes
+|-- core/                 Environment-based settings
+|-- schemas/              HTTP response contracts
+|-- services/             Hopsworks adapter and future model services
+|-- pipeline_registry.py  Named Kedro pipelines
+|-- settings.py           Kedro configuration source
+|-- pipelines/
+|   |-- smoke/            Local runtime check
+|   |-- ingestion/        Hopsworks feature snapshot
+|   |-- preprocessing/   Reserved for feature transformations
+|   |-- training/        Reserved for model training
+|   |-- evaluation/      Reserved for model evaluation
+|   `-- inference/       Reserved for predictions
+`-- monitoring/          Reserved for drift and model performance checks
+```
+
+Kedro reads `config/base/catalog.yml` and `parameters.yml`. Developer overrides go
+in the ignored `config/local/` folder. The bank example is only a reference.
+
+## Hopsworks
+
+Copy `.env.example` to `.env`, then set the host, project, API key, feature-view
+name, and version for an existing Hopsworks project. Never put keys in frontend
+configuration. Settings read `.env` from the backend working directory; process
+environment variables take precedence.
+
+The optional SDK group targets Hopsworks 5.0.x. Match this SDK major version to
+your Hopsworks server before connecting. The adapter uses explicit credentials,
+the Python engine, and TLS hostname verification. It does not create or modify
+remote feature groups or views.
+
+```powershell
+uv sync --frozen --extra dev --extra hopsworks
+uv run --frozen --extra dev --extra hopsworks kedro run --pipelines feature_snapshot
+```
+
+On Windows, the SDK's `twofish` dependency needs Microsoft C++ Build Tools.
+The backend Docker image includes the SDK and builds native dependencies in its
+Linux build stage, so Docker is an alternative for feature-store jobs:
+
+```powershell
+# From the repository root, after starting Docker Desktop:
+docker compose build backend
+docker compose run --rm backend kedro run --pipelines feature_snapshot
+```
+
+The Compose data volume retains the snapshot after the job exits. The snapshot is
+a batch feature export, not a versioned training dataset. Define labels, entity
+keys, splits, and point-in-time training datasets once the ML use case is known.
+If the feature view uses fitted transformations, set
+`HOPSWORKS_TRAINING_DATASET_VERSION` to the matching training dataset version.
+
+See the official [Hopsworks login API](https://docs.hopsworks.ai/latest/python-api/hopsworks/)
+and [feature-view API](https://docs.hopsworks.ai/latest/python-api/hsfs/feature_view/).
+
+## Verification and CI
+
+```powershell
+uv run --frozen --extra dev pytest -q
+uv run --frozen --extra dev ruff check src tests
+uv run --frozen --extra dev ruff format --check src tests
+```
+
+Tests exercise the real Kedro configuration, Parquet output, and HTTP routes.
+Hopsworks network calls are mocked. These commands can be used in your GitHub
+Actions workflow with `working-directory: backend`; no workflow is added here.
+
+The checked-in `uv.lock` is shared by local development and Docker builds.
+See [deployment instructions](../deploy/README.md) for Compose and Kubernetes.

@@ -1,0 +1,3 @@
+feature_snapshot:
+  type: pandas.ParquetDataset
+  filepath: data/processed/features.parquet

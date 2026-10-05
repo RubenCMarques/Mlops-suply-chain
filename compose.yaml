@@ -1,0 +1,24 @@
+services:
+  backend:
+    build: ./backend
+    image: supply-chain-backend:local
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file:
+      - path: ./backend/.env
+        required: false
+    volumes:
+      - pipeline-data:/app/data
+    init: true
+
+  frontend:
+    build: ./frontend
+    image: supply-chain-frontend:local
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  pipeline-data:

@@ -1,0 +1,15 @@
+.venv
+__pycache__
+**/__pycache__
+*.egg-info
+src/*.egg-info
+.env
+.env.*
+config/local
+data
+models
+notebooks
+tests
+.pytest_cache
+.ruff_cache
+*.log
