@@ -35,6 +35,28 @@ The default pipeline is also `smoke`. It checks project configuration and execut
 a real Kedro node without external services. `feature_snapshot` reads an existing
 Hopsworks feature view into `data/processed/features.parquet`.
 
+### Raw data from Kaggle
+
+`kaggle_ingestion` downloads the public
+[DataCo Smart Supply Chain](https://www.kaggle.com/datasets/shashwatwork/dataco-smart-supply-chain-for-big-data-analysis)
+dataset and stores it unchanged as Parquet in the raw layer:
+
+| Output | Contents |
+| --- | --- |
+| `data/raw/dataco_supply_chain.parquet` | Orders, shipments, customers and products |
+| `data/raw/dataco_column_descriptions.parquet` | Description of each column |
+
+```powershell
+uv run kedro run --pipelines kaggle_ingestion
+```
+
+No Kaggle account is needed for this public dataset. If Kaggle starts asking for
+credentials, set `KAGGLE_USERNAME` and `KAGGLE_KEY` in your shell. kagglehub caches
+the download in `~/.cache/kagglehub`, so later runs do not download it again.
+The dataset, file names, encoding and required columns are set under
+`kaggle_ingestion` in `config/base/parameters.yml`. The run fails if a table is
+empty or a required column is missing.
+
 ```text
 src/supply_chain/
 |-- api/                  FastAPI application and routes
@@ -45,7 +67,7 @@ src/supply_chain/
 |-- settings.py           Kedro configuration source
 |-- pipelines/
 |   |-- smoke/            Local runtime check
-|   |-- ingestion/        Hopsworks feature snapshot
+|   |-- ingestion/        Kaggle raw data and Hopsworks feature snapshot
 |   |-- preprocessing/   Reserved for feature transformations
 |   |-- training/        Reserved for model training
 |   |-- evaluation/      Reserved for model evaluation

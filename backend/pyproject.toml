@@ -14,6 +14,7 @@ dependencies = [
     "pydantic-settings>=2.6,<3",
     "kedro>=1.7,<1.8",
     "kedro-datasets[pandas-parquetdataset]>=6,<10",
+    "kagglehub[pandas-datasets]>=1.0,<2",
 ]
 
 [project.optional-dependencies]

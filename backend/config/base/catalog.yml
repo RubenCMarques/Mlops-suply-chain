@@ -1,3 +1,11 @@
+dataco_orders_raw:
+  type: pandas.ParquetDataset
+  filepath: data/raw/dataco_supply_chain.parquet
+
+dataco_column_descriptions_raw:
+  type: pandas.ParquetDataset
+  filepath: data/raw/dataco_column_descriptions.parquet
+
 feature_snapshot:
   type: pandas.ParquetDataset
   filepath: data/processed/features.parquet

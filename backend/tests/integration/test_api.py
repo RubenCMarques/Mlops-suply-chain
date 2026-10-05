@@ -22,4 +22,8 @@ def test_health_and_status_work_without_hopsworks_and_do_not_expose_secrets():
             "connection": "not_checked",
         }
         assert "private-test-key" not in response.text
-        assert {p["name"] for p in response.json()["pipelines"]} == {"smoke", "feature_snapshot"}
+        assert {p["name"] for p in response.json()["pipelines"]} == {
+            "smoke",
+            "kaggle_ingestion",
+            "feature_snapshot",
+        }
