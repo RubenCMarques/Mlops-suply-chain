@@ -1,5 +1,5 @@
 FROM ghcr.io/astral-sh/uv:0.9.5 AS uv
-FROM python:3.12-slim AS builder
+FROM python:3.13-slim AS builder
 
 COPY --from=uv /uv /usr/local/bin/uv
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential \
@@ -9,7 +9,7 @@ COPY pyproject.toml uv.lock README.md ./
 COPY src ./src
 RUN uv sync --frozen --no-dev --extra hopsworks --no-editable
 
-FROM python:3.12-slim
+FROM python:3.13-slim
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
