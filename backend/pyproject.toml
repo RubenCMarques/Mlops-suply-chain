@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8,<10", "httpx>=0.27,<=0.28.1", "ruff>=0.15,<1"]
+dev = ["pytest>=8,<10", "httpx>=0.27,<=0.28.1", "ruff>=0.15,<1", "pylint>=3.3,<5"]
 hopsworks = ["hopsworks[python]>=5.0.9,<5.1"]
 
 [tool.setuptools.packages.find]
@@ -39,3 +39,12 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
+
+[tool.pylint.main]
+source-roots = ["src"]
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint."messages control"]
+disable = ["missing-module-docstring", "missing-class-docstring", "missing-function-docstring"]

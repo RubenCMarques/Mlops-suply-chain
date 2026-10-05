@@ -13,7 +13,7 @@ def get_feature_view(settings: Settings | None = None) -> Any:
 
     # Keep SDK initialization and remote access out of API imports and health checks.
     try:
-        import hopsworks
+        import hopsworks  # pylint: disable=import-outside-toplevel
     except ModuleNotFoundError as error:
         if error.name != "hopsworks":
             raise

@@ -96,13 +96,20 @@ and [feature-view API](https://docs.hopsworks.ai/latest/python-api/hsfs/feature_
 
 ```powershell
 uv run --frozen --extra dev pytest -q
+uv run --frozen --extra dev pylint src/supply_chain
 uv run --frozen --extra dev ruff check src tests
 uv run --frozen --extra dev ruff format --check src tests
 ```
 
 Tests exercise the real Kedro configuration, Parquet output, and HTTP routes.
-Hopsworks network calls are mocked. These commands can be used in your GitHub
-Actions workflow with `working-directory: backend`; no workflow is added here.
+Hopsworks network calls are mocked; CI requires no Hopsworks credentials.
+
+The [CI workflow](../.github/workflows/ci.yml) runs on pushes, pull requests, and
+manual dispatch. It has separate jobs for backend tests, Pylint/Ruff/formatting,
+and the React production build. Python 3.12 and Node.js 22 match the containers.
+Dependencies are installed from the committed lockfiles. Pylint checks application
+code; Ruff also checks tests. Missing-docstring style checks are disabled to match
+the current code style; other Pylint diagnostics fail the job.
 
 The checked-in `uv.lock` is shared by local development and Docker builds.
 See [deployment instructions](../deploy/README.md) for Compose and Kubernetes.
