@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# Frontend and build output
+node_modules/
+dist/
+build/
+coverage/
+bank-full-project_example/
+
+# Local settings and secrets
+.env
+.env.*
+!.env.example
+/backend/config/local/*
+!/backend/config/local/.gitkeep
+
+# Local datasets and model artifacts
+/backend/data/**/*
+!/backend/data/**/
+!/backend/data/**/.gitkeep
+/backend/models/*
+!/backend/models/.gitkeep
+mlruns/
+mlartifacts/
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
