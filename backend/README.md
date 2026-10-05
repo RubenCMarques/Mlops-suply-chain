@@ -104,9 +104,10 @@ uv run --frozen --extra dev ruff format --check src tests
 Tests exercise the real Kedro configuration, Parquet output, and HTTP routes.
 Hopsworks network calls are mocked; CI requires no Hopsworks credentials.
 
-The [CI workflow](../.github/workflows/ci.yml) runs on pushes, pull requests, and
-manual dispatch. It has separate jobs for backend tests, Pylint/Ruff/formatting,
-and the React production build. Python 3.12 and Node.js 22 match the containers.
+The [CI workflow](../.github/workflows/ci.yml) runs backend tests and the React
+production build. The [Pylint workflow](../.github/workflows/pylint.yml) runs
+Pylint, Ruff, and formatting checks. Both run on pushes, pull requests, and manual
+dispatch. Python 3.12 and Node.js 22 match the containers.
 Dependencies are installed from the committed lockfiles. Pylint checks application
 code; Ruff also checks tests. Missing-docstring style checks are disabled to match
 the current code style; other Pylint diagnostics fail the job.
